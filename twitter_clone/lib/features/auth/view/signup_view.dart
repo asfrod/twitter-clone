@@ -1,25 +1,24 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:twitter_clone/constants/constants.dart';
-import 'package:twitter_clone/constants/ui_constants.dart';
-import 'package:twitter_clone/features/auth/view/signup_view.dart';
-import 'package:twitter_clone/theme/pallete.dart';
+import 'package:twitter_clone/features/auth/view/login_view.dart';
+import 'package:twitter_clone/features/auth/widgets/authc_field.dart';
 
-import '../../../common/rounded_small_button.dart';
-import '../widgets/authc_field.dart';
+import '../../../common/common.dart';
+import '../../../constants/constants.dart';
+import '../../../theme/theme.dart';
 
-class LoginView extends StatefulWidget {
+class SignUpView extends StatefulWidget {
+
   static route() => MaterialPageRoute(
-        builder: (context) => const LoginView(),
+        builder: (context) => const SignUpView(),
       );
-  const LoginView({super.key});
+  const SignUpView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignUpView> createState() => _SignUpViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignUpViewState extends State<SignUpView> {
   final appbar = UIConstants.appBar();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -67,18 +66,20 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: "Don't have a account?",
+                    text: "Already have a account?",
                     style: const TextStyle(fontSize: 16),
                     children: [
                       TextSpan(
-                          text: ' Sign up',
+                          text: ' Login',
                           style: const TextStyle(
                             color: Pallete.kBlueColor,
                             fontSize: 16,
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.push(context, SignUpView.route());
+                              Navigator.push(
+                                context,
+                                LoginView.route());
                             }),
                     ],
                   ),

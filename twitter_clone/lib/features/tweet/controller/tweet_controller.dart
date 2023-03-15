@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:twitter_clone/apis/storage_api.dart';
 import 'package:twitter_clone/apis/tweet_api.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enums.dart';
 import 'package:twitter_clone/core/utils.dart';
@@ -14,17 +16,23 @@ final tweetControllerProvider = StateNotifierProvider<TweetController, bool>(
     return TweetController(
       ref: ref,
       tweetAPI: ref.watch(tweetAPIProvider),
+      storageAPI: ref.watch(storageAPIProvider),
     );
   },
 );
 
 class TweetController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
+  final StorageAPI _storageAPI;
   final Ref _ref;
 
-  TweetController({required Ref ref, required TweetAPI tweetAPI})
-      : _ref = ref,
+  TweetController({
+    required Ref ref,
+    required TweetAPI tweetAPI,
+    required StorageAPI storageAPI,
+  })  : _ref = ref,
         _tweetAPI = tweetAPI,
+        _storageAPI = storageAPI,
         super(false);
 
   void shareTweet({
@@ -55,7 +63,29 @@ class TweetController extends StateNotifier<bool> {
     required List<File> images,
     required String text,
     required BuildContext context,
-  }) {}
+  }) async {
+    state = true;
+    final hashtags = _getHashtagsFromText(text);
+    String link = _getLinkFromText(text);
+    final user = _ref.read(currentUserDeatilsProvider).value!;
+    final imageLinks = await _storageAPI.uploadImage(images);
+    Tweet tweet = Tweet(
+      text: text,
+      hashtags: hashtags,
+      link: link,
+      imageLinks: imageLinks,
+      uid: user.uid,
+      tweetType: TweetType.image,
+      tweetedAt: DateTime.now(),
+      likes: const [],
+      commentIds: const [],
+      id: '',
+      reshareCount: 0,
+    );
+    final res = await _tweetAPI.shareTweet(tweet);
+    state = false;
+    res.fold((l) => showSnackBar(context, l.message), (r) => null);
+  }
 
   void _shareTextTweet({
     required String text,
@@ -79,6 +109,7 @@ class TweetController extends StateNotifier<bool> {
       reshareCount: 0,
     );
     final res = await _tweetAPI.shareTweet(tweet);
+    state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) => null);
   }
 

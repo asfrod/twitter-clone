@@ -6,6 +6,7 @@
         "fpdart",
         "reshare",
         "riverpod",
-        "signup"
+        "signup",
+        "timeago"
     ]
 }
